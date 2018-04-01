@@ -28,8 +28,8 @@ void bs_write_u1(bs_t* b, uint32_t v);
 void bs_write_u(bs_t* b, int n, uint32_t v);
 
 /**指数哥伦布编码*/
-void bs_write_ue( bs_t *s, unsigned int val);
+void bs_write_ue( bs_t *b, unsigned int val);
 void bs_write_se(bs_t* b, int32_t v);
-void bs_write_te( bs_t *s, int x, int val);
+void bs_write_te( bs_t *b, int x, int val);
 
 #endif /* bs_h */
