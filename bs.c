@@ -30,7 +30,7 @@ void bs_free(bs_t* b)
 }
 
 /** 是否已读到末尾（end_of_file） */
-int bs_eof(bs_t* bs) { if (bs->p >= bs->end) { return 1; } else { return 0; } }
+int bs_eof(bs_t* b) { if (b->p >= b->end) { return 1; } else { return 0; } }
 
 void bs_write_u1(bs_t* b, uint32_t v)
 {
@@ -68,7 +68,7 @@ void bs_write_u(bs_t* b, int n, uint32_t v)
 /**
  ue(v) 无符号指数哥伦布编码
  */
-void bs_write_ue( bs_t *s, unsigned int val)
+void bs_write_ue( bs_t *b, unsigned int val)
 {
     // val + 1所需的比特个数
     int i_size = 0;
@@ -99,7 +99,7 @@ void bs_write_ue( bs_t *s, unsigned int val)
     
     if( val == 0 ) // 输入为0，直接编码为1
     {
-        bs_write_u1( s, 1 );
+        bs_write_u1( b, 1 );
     }
     else
     {
@@ -121,7 +121,7 @@ void bs_write_ue( bs_t *s, unsigned int val)
         i_size += i_size0_255[tmp];
         // 5.最终得出编码val所需的总比特数：2 * i_size - 1
         // 写入Buffer
-        bs_write_u( s, 2 * i_size - 1, val );
+        bs_write_u( b, 2 * i_size - 1, val );
     }
 }
 
@@ -143,14 +143,14 @@ void bs_write_se(bs_t* b, int32_t v)
 /**
  te(v) 截断指数哥伦布编码
  */
-void bs_write_te( bs_t *s, int x, int val)
+void bs_write_te( bs_t *b, int x, int val)
 {
     if( x == 1 )
     {
-        bs_write_u1( s, 1&~val );
+        bs_write_u1( b, 1&~val );
     }
     else if( x > 1 )
     {
-        bs_write_ue( s, val );
+        bs_write_ue( b, val );
     }
 }

@@ -60,6 +60,8 @@ int main(int argc, const char * argv[]) {
     }
     printf("\n");
     
+    bs_free(bs);
+    
     return 0;
 }
 
