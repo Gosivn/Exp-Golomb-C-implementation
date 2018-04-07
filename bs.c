@@ -194,6 +194,9 @@ uint32_t bs_read_u(bs_t* b, int n)
     return r;
 }
 
+/**
+ ue(v) 解码
+ */
 uint32_t bs_read_ue(bs_t* b)
 {
     int32_t r = 0; // 解码得到的返回值
@@ -210,6 +213,7 @@ uint32_t bs_read_ue(bs_t* b)
     r += (1 << i) - 1;
     return r;
 }
+
 /**
  se(v) 解码
  */
