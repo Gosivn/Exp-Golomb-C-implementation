@@ -154,3 +154,94 @@ void bs_write_te( bs_t *b, int x, int val)
         bs_write_ue( b, val );
     }
 }
+
+/** 读取1个比特 */
+uint32_t bs_read_u1(bs_t* b)
+{
+    uint32_t r = 0; // 读取比特返回值
+    
+    // 1.剩余比特先减1
+    b->bits_left--;
+    
+    if (! bs_eof(b))
+    {
+        // 2.计算返回值
+        r = ((*(b->p)) >> b->bits_left) & 0x01;
+    }
+    
+    // 3.判断是否读到字节末尾，如果是指针位置移向下一字节，比特位初始为8
+    if (b->bits_left == 0) { b->p ++; b->bits_left = 8; }
+    
+    return r;
+}
+
+/**
+ 读取n个比特
+
+ @param b 比特流操作句柄
+ @param n 读取多少个比特
+ @return 返回读取到的值
+ */
+uint32_t bs_read_u(bs_t* b, int n)
+{
+    uint32_t r = 0; // 读取比特返回值
+    int i;  // 当前读取到的比特位索引
+    for (i = 0; i < n; i++)
+    {
+        // 1.每次读取1比特，并依次从高位到低位放在r中
+        r |= ( bs_read_u1(b) << ( n - i - 1 ) );
+    }
+    return r;
+}
+
+uint32_t bs_read_ue(bs_t* b)
+{
+    int32_t r = 0; // 解码得到的返回值
+    int i = 0;     // leadingZeroBits
+    
+    // 1.计算leadingZeroBits
+    while( (bs_read_u1(b) == 0) && (i < 32) && (!bs_eof(b)) )
+    {
+        i++;
+    }
+    // 2.计算read_bits( leadingZeroBits )
+    r = bs_read_u(b, i);
+    // 3.计算codeNum，1 << i即为2的i次幂
+    r += (1 << i) - 1;
+    return r;
+}
+/**
+ se(v) 解码
+ */
+int32_t bs_read_se(bs_t* b)
+{
+    // 1.解码出codeNum，记为r
+    int32_t r = bs_read_ue(b);
+    // 2.判断r的奇偶性
+    if (r & 0x01) // 如果为奇数，说明编码前>0
+    {
+        r = (r+1)/2;
+    }
+    else // 如果为偶数，说明编码前<=0
+    {
+        r = -(r/2);
+    }
+    return r;
+}
+
+/**
+ te(v) 解码
+ */
+uint32_t bs_read_te( bs_t *b, int x )
+{
+    // 1.判断取值上限
+    if( x == 1 ) // 如果为1则将读取到的比特值取反
+    {
+        return 1 - bs_read_u1( b );
+    }
+    else if( x > 1 ) // 否则按照ue(v)进行解码
+    {
+        return bs_read_ue( b );
+    }
+    return 0;
+}

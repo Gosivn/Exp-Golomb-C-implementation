@@ -26,10 +26,17 @@ void bs_free(bs_t* b);
 
 void bs_write_u1(bs_t* b, uint32_t v);
 void bs_write_u(bs_t* b, int n, uint32_t v);
+uint32_t bs_read_u1(bs_t* b);
+uint32_t bs_read_u(bs_t* b, int n);
 
 /**指数哥伦布编码*/
 void bs_write_ue( bs_t *b, unsigned int val);
 void bs_write_se(bs_t* b, int32_t v);
 void bs_write_te( bs_t *b, int x, int val);
+
+/**解码*/
+uint32_t bs_read_ue(bs_t* b);
+int32_t  bs_read_se(bs_t* b);
+uint32_t bs_read_te( bs_t *b, int x );
 
 #endif /* bs_h */
